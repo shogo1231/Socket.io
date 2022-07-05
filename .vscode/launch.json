@@ -1,0 +1,38 @@
+// IntelliSense を使用して利用可能な属性を学べます。
+// 既存の属性の説明をホバーして表示します。
+// 詳細情報は次を確認してください: https://go.microsoft.com/fwlink/?linkid=830387
+
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Launch 3000",
+      "type": "node",
+      "request": "launch",
+ 
+      // 開発用webサーバのurlを指定
+      // "url": "http://localhost:3001",
+ 
+      "sourceMaps": true,
+      // "webRoot": "${workspaceRoot}",
+      "port": 3000,
+      "program": "${workspaceFolder}\\app.js",
+      "args": ["3000"],
+      "internalConsoleOptions": "openOnFirstSessionStart",
+    },
+    {
+      "name": "Launch 3001",
+      "type": "node",
+      "request": "launch",
+ 
+      // 開発用webサーバのurlを指定
+      // "url": "http://localhost:3000",
+ 
+      "sourceMaps": true,
+      // "webRoot": "${workspaceRoot}",
+      "port": 3001,
+      "program": "${workspaceFolder}\\app.js",
+      "args": ["3001"]
+    },
+  ]
+}

@@ -49,6 +49,8 @@ server.listen(PORT, () => {
 
 // クライアントとのコネクションが確立した時の処理
 io.on('connection', (socket) => {
+  let name;
+
   socket.on('client_to_server', (message) => {
     console.log('Message has been sent: ', message);
     // 'server_to_client' というイベントを発火、受信したメッセージを全てのクライアントに対して送信する
@@ -59,4 +61,13 @@ io.on('connection', (socket) => {
   socket.on('client_to_server_broadcast', function(data) {
     socket.broadcast.emit('server_to_client', {value : data.value});
   });
+
+  // client_to_server_personalイベント・データを受信し、送信元だけに送信する
+  socket.on('client_to_server_personal', function(data) {
+    const id = socket.id;
+    name = data.name;
+    let personalMessage = `あなたは、${name}さんとして入室しました。`;
+    io.to(id).emit('server_to_client', {value : personalMessage})
+});
+
 });

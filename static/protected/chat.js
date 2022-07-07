@@ -28,6 +28,8 @@ $(function() {
       let entryMessage = `${name}さんが入室しました。`;
       // client_to_server_broadcastイベント発火
       socket.emit('client_to_server_broadcast', { value: entryMessage });
+      // client_to_server_personalイベント発火
+      socket.emit("client_to_server_personal", { 'name' : name });
       changeLabel();
     }
   });

@@ -2,6 +2,9 @@ const express = require("express");
 const cookie = require("cookie-parser");
 const session = require("express-session");
 const FileStore = require("session-file-store")(session);
+const http = require('http');
+const socketio = require('socket.io');
+
 const app  = express();
 const PORT = 3000;
 
@@ -34,8 +37,22 @@ app.use(session({
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
+// ソケット通信を行うための設定
+let server = http.createServer(app);
+const io = socketio(server);
+
 // HTTPサーバ接続
-app.listen(PORT, () => {
-  // app.use('/', require('./routes/login.js'));
+server.listen(PORT, () => {
+  app.use('/', require('./routes/chat.js'));
   console.log(`Listening on ${PORT}`);
+});
+
+// クライアントとのコネクションが確立した時の処理
+io.on('connection', (socket) => {
+  socket.on('client_to_server', (message) => {
+    console.log('Message has been sent: ', message);
+    // 'server_to_client' というイベントを発火、受信したメッセージを全てのクライアントに対して送信する
+    io.emit('server_to_client', message);
+  });
+
 });

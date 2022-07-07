@@ -55,4 +55,8 @@ io.on('connection', (socket) => {
     io.emit('server_to_client', message);
   });
 
+  // client_to_server_broadcastイベント・データを受信し、送信元以外に送信する
+  socket.on('client_to_server_broadcast', function(data) {
+    socket.broadcast.emit('server_to_client', {value : data.value});
+  });
 });

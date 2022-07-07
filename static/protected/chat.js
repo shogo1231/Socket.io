@@ -4,11 +4,11 @@ $(function() {
   let name = '';
 
   socket.on('server_to_client', function(data){
-    appendMsg(data.value);
+    prependMsg(data.value);
   });
 
-  function appendMsg(text) {
-    $('#chatLogs').append('<div>' + text + '</div>');
+  function prependMsg(text) {
+    $('#chatLogs').prepend('<div>' + text + '</div>');
   }
 
   $('form').submit((e) => {

@@ -68,6 +68,15 @@ io.on('connection', (socket) => {
     name = data.name;
     let personalMessage = `あなたは、${name}さんとして入室しました。`;
     io.to(id).emit('server_to_client', {value : personalMessage})
-});
+  });
 
+  // disconnectイベントを受信し、退出メッセージを送信する
+  socket.on('disconnect', function() {
+    if (!name) {
+        console.log("未入室のまま、どこかへ去っていきました。");
+    } else {
+        let endMessage = `${name}さんが退出しました。`;
+        io.emit('server_to_client', {value : endMessage});
+    }
+  });
 });

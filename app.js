@@ -47,8 +47,9 @@ server.listen(PORT, () => {
   console.log(`Listening on ${PORT}`);
 });
 
+// チャット機能
 // クライアントとのコネクションが確立した時の処理
-io.on('connection', (socket) => {
+let chat = io.of('/chat').on('connection', (socket) => {
   let room;
   let name;
 
@@ -61,7 +62,7 @@ io.on('connection', (socket) => {
   socket.on('client_to_server', (message) => {
     console.log('Message has been sent: ', message);
     // 'server_to_client' というイベントを発火、受信したメッセージを全てのクライアントに対して送信する
-    io.to(room).emit('server_to_client', message);
+    chat.to(room).emit('server_to_client', message);
   });
 
   // client_to_server_broadcastイベント・データを受信し、送信元以外に送信する
@@ -74,7 +75,7 @@ io.on('connection', (socket) => {
     const id = socket.id;
     name = data.name;
     let personalMessage = `あなたは、${name}さんとして入室しました。`;
-    io.to(id).emit('server_to_client', {value : personalMessage})
+    chat.to(id).emit('server_to_client', {value : personalMessage})
   });
 
   // disconnectイベントを受信し、退出メッセージを送信する
@@ -83,7 +84,17 @@ io.on('connection', (socket) => {
         console.log("未入室のまま、どこかへ去っていきました。");
     } else {
         let endMessage = `${name}さんが退出しました。`;
-        io.to(room).emit('server_to_client', {value : endMessage});
+        chat.to(room).emit('server_to_client', {value : endMessage});
     }
   });
+});
+
+// 今日の運勢機能
+let fortune = io.of('/fortune').on('connection', function(socket) {
+  let id = socket.id;
+  // 運勢の配列からランダムで取得してアクセスしたクライアントに送信する
+  let fortunes = ["大吉", "吉", "中吉", "小吉", "末吉", "凶", "大凶"];
+  let selectedFortune = fortunes[Math.floor(Math.random() * fortunes.length)];
+  let todaysFortune = "今日のあなたの運勢は… " + selectedFortune + " です。"
+  fortune.to(id).emit('server_to_client', {value : todaysFortune});
 });

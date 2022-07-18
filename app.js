@@ -49,17 +49,24 @@ server.listen(PORT, () => {
 
 // クライアントとのコネクションが確立した時の処理
 io.on('connection', (socket) => {
+  let room;
   let name;
+
+  // roomへの入室は、「socket.join(room名)」
+  socket.on('client_to_server_join', function(data) {
+    room = data.value;
+    socket.join(room);
+  });
 
   socket.on('client_to_server', (message) => {
     console.log('Message has been sent: ', message);
     // 'server_to_client' というイベントを発火、受信したメッセージを全てのクライアントに対して送信する
-    io.emit('server_to_client', message);
+    io.to(room).emit('server_to_client', message);
   });
 
   // client_to_server_broadcastイベント・データを受信し、送信元以外に送信する
   socket.on('client_to_server_broadcast', function(data) {
-    socket.broadcast.emit('server_to_client', {value : data.value});
+    socket.broadcast.to(room).emit('server_to_client', {value : data.value});
   });
 
   // client_to_server_personalイベント・データを受信し、送信元だけに送信する
@@ -76,7 +83,7 @@ io.on('connection', (socket) => {
         console.log("未入室のまま、どこかへ去っていきました。");
     } else {
         let endMessage = `${name}さんが退出しました。`;
-        io.emit('server_to_client', {value : endMessage});
+        io.to(room).emit('server_to_client', {value : endMessage});
     }
   });
 });

@@ -15,6 +15,7 @@ $(function() {
     e.preventDefault();
 
     let message = $('#msgForm').val();
+    let selectRoom = $('#rooms').val();
     $('#msgForm').val('');
 
     // 入室している（初回接続ではない）場合
@@ -26,6 +27,7 @@ $(function() {
     else {
       name = message;
       let entryMessage = `${name}さんが入室しました。`;
+      socket.emit("client_to_server_join", {value : selectRoom});
       // client_to_server_broadcastイベント発火
       socket.emit('client_to_server_broadcast', { value: entryMessage });
       // client_to_server_personalイベント発火
@@ -35,9 +37,10 @@ $(function() {
   });
 
   function changeLabel() {
-    $('label').text('メッセージ：');
-    $('button').text('送信');
+    $(".nameLabel").text("メッセージ：");
+    $("#rooms").prop("disabled", true);
+    $("button").text("送信");
     isEnter = true;
-  }
+}
 
 }());

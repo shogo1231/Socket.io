@@ -12,7 +12,12 @@
     <h1>WebSocket-Chat</h1>
     <form class="form-inline">
       <div class="form-group">
-        <label for="msgForm">名前：</label>
+        <label class="roomLabel" for="rooms">部屋：</label>
+        <select class="form-control" id="rooms">
+          <option value="room01">部屋01</option>
+          <option value="room02">部屋02</option>
+        </select>
+        <label class="nameLabel" for="msgForm">名前：</label>
         <input type="text" class="form-control" id="msgForm">
       </div>
       <button type="submit" id="sendButton" class="btn btn-primary">入室</button>

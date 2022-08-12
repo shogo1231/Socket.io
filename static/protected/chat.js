@@ -1,8 +1,11 @@
 $(function() {
-  // let socket = io.connect();
   // ソケットへの接続
-  let chat = io('http://localhost:3000/chat');
-  let fortune = io('http://localhost:3000/fortune');
+  // let socket = io.connect();
+  // let chat = io.connect('http://localhost:3000/chat', { transports: ["xhr-polling"], port: 3001 });
+  // let fortune = io.connect('http://localhost:3000/fortune', { transports: ["xhr-polling"], port: 3001 });
+  const HOST = '118.27.102.45'
+  let chat = io(`http://${HOST}/chat`);
+  let fortune = io(`http://${HOST}/fortune`);
   let isEnter = false;
   let name = '';
 
@@ -52,6 +55,5 @@ $(function() {
     $("#rooms").prop("disabled", true);
     $("button").text("送信");
     isEnter = true;
-}
-
+  }
 }());

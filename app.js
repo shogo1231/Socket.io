@@ -20,7 +20,7 @@ app.use('/static', express.static(__dirname+'/static'));
 app.use(cookie());
 app.use(session({
   secret: "YOUR SECRET SALT",
-  resave: false, 
+  resave: false,
   saveUninitialized: true,
   rolling : true,
   cookie:{
@@ -43,7 +43,7 @@ const io = socketio(server);
 
 // HTTPサーバ接続
 server.listen(PORT, () => {
-  app.use('/', require('./routes/chat.js'));
+  app.use('/chatApp', require('./routes/chat.js'));
   console.log(`Listening on ${PORT}`);
 });
 

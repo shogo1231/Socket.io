@@ -3,9 +3,10 @@ $(function() {
   // let socket = io.connect();
   // let chat = io.connect('http://localhost:3000/chat', { transports: ["xhr-polling"], port: 3001 });
   // let fortune = io.connect('http://localhost:3000/fortune', { transports: ["xhr-polling"], port: 3001 });
-  const HOST = '133.130.91.178';
-  let chat = io(`http://${HOST}/chat`);
-  let fortune = io(`http://${HOST}/fortune`);
+  // const HOST = '133.130.91.178';
+  const HOST = 'gosho-techplay.com';
+  let chat = io(`https://${HOST}/chat`);
+  let fortune = io(`https://${HOST}/fortune`);
   let isEnter = false;
   let name = '';
 

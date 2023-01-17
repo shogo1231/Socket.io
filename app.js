@@ -2,6 +2,9 @@ const express = require("express");
 const cookie = require("cookie-parser");
 const session = require("express-session");
 const FileStore = require("session-file-store")(session);
+const http = require('http');
+const socketio = require('socket.io');
+
 const app  = express();
 const PORT = 3000;
 
@@ -34,8 +37,64 @@ app.use(session({
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
+// ソケット通信を行うための設定
+let server = http.createServer(app);
+const io = socketio(server);
+
 // HTTPサーバ接続
-app.listen(PORT, () => {
-  // app.use('/', require('./routes/login.js'));
+server.listen(PORT, () => {
+  app.use('/', require('./routes/chat.js'));
   console.log(`Listening on ${PORT}`);
+});
+
+// チャット機能
+// クライアントとのコネクションが確立した時の処理
+let chat = io.of('/chat').on('connection', (socket) => {
+  let room;
+  let name;
+
+  // roomへの入室は、「socket.join(room名)」
+  socket.on('client_to_server_join', function(data) {
+    room = data.value;
+    socket.join(room);
+  });
+
+  socket.on('client_to_server', (message) => {
+    console.log('Message has been sent: ', message);
+    // 'server_to_client' というイベントを発火、受信したメッセージを全てのクライアントに対して送信する
+    chat.to(room).emit('server_to_client', message);
+  });
+
+  // client_to_server_broadcastイベント・データを受信し、送信元以外に送信する
+  socket.on('client_to_server_broadcast', function(data) {
+    socket.broadcast.to(room).emit('server_to_client', {value : data.value});
+  });
+
+  // client_to_server_personalイベント・データを受信し、送信元だけに送信する
+  socket.on('client_to_server_personal', function(data) {
+    const id = socket.id;
+    name = data.name;
+    let personalMessage = `あなたは、${name}さんとして入室しました。`;
+    chat.to(id).emit('server_to_client', {value : personalMessage})
+  });
+
+  // disconnectイベントを受信し、退出メッセージを送信する
+  socket.on('disconnect', function() {
+    if (!name) {
+        console.log("未入室のまま、どこかへ去っていきました。");
+    } else {
+        let endMessage = `${name}さんが退出しました。`;
+        chat.to(room).emit('server_to_client', {value : endMessage});
+    }
+  });
+});
+
+// 今日の運勢機能
+let fortune = io.of('/fortune').on('connection', function(socket) {
+  let id = socket.id;
+  // 運勢の配列からランダムで取得してアクセスしたクライアントに送信する
+  let fortunes = ["大吉", "吉", "中吉", "小吉", "末吉", "凶", "大凶"];
+  let selectedFortune = fortunes[Math.floor(Math.random() * fortunes.length)];
+  let todaysFortune = "今日のあなたの運勢は… " + selectedFortune + " です。"
+  fortune.to(id).emit('server_to_client', {value : todaysFortune});
 });
